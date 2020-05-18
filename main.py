@@ -16,7 +16,6 @@ from time import ctime, sleep
 
 class TupaAssistance:
 	def __init__(self):
-		self.initialize = True
 		self.r = sr.Recognizer()
 		self.r.energy_threshold = 400
 		
@@ -31,26 +30,23 @@ class TupaAssistance:
 				print("Microphone with name \"{1}\" found for `Microphone(device_index={0})`".format(index, name))
 
 	def habla(self, texto):
-		print(texto)
 		tts = gTTS(text=texto, lang="es")
 		fName = random.randint(1,1000)
 		audio = "audio-"+str(fName)+".mp3"
 		tts.save(audio)
 		playsound.playsound(audio)
+		print("TUPA: "+ texto)
 		os.remove(audio)
 
-	def listen(self, prompt = "¿Hola en que te puedo ayudar?\n"):
+	def listen(self, prompt = "¿Hola en que te puedo ayudar?"):
 		with self.mic as source:
 			voice_data = ""
 			
-			# Only First Time
-			# if self.initialize:
-			print("\nSe esta calibrando el microfono...\n")
+			print('\033[93m'+"\nSe esta calibrando el microfono...\n"+'\033[0m')
 			self.r.adjust_for_ambient_noise(source, 5)
 			self.r.dynamic_energy_threshold = True 
-			# self.initialize = False
 
-			print(prompt)
+			print('\033[95m' + prompt + '\033[0m')
 			
 			try:
 				audio = self.r.listen(source)
@@ -63,15 +59,13 @@ class TupaAssistance:
 
 	def respuesta(self, audio_data):
 		data = str(audio_data).lower()
-		print("TU: "+ data)
+		print("=> "+ data)
 
 		if 'cómo te llamas' in data:
 			self.habla("Mi nombre es Tupa, Tupa la Obeja")
-			print("TUPA: Mi nombre es Tupa, Tupa la Obeja :)\n")
 
 		if 'qué día es hoy' in data:
 			self.habla(str(ctime()))
-			print("TUPA: Hoy es "+ str(ctime()) +"\n")
 		
 		if 'busca' in data:
 			prompt = "¿Qué quieres buscar?"
@@ -80,7 +74,6 @@ class TupaAssistance:
 			url = "https://www.google.com/search?q="+ str(search)
 			webbrowser.get().open(url)
 			self.habla("Aqui es lo que encontre respecto a "+ search)
-			print("Aqui es lo que encontre respecto a "+ search)
 
 		if 'traduce' in data:
 			prompt = "¿Qué quieres traducir?"
@@ -89,19 +82,17 @@ class TupaAssistance:
 			url = "https://translate.google.com/?hl=es#view=home&op=translate&sl=es&tl=en&text="+ str(search)
 			webbrowser.get().open(url)
 			self.habla("Aqui esta la traduccion de "+ str(search))
-			print("Aqui esta la traduccion de "+ str(search))
 
 		if 'localiza' in data:
-			prompt = "¿Qué andas buscando?"
+			prompt = "¿Qué quieres localizar?"
 			self.habla(prompt)
 			search = self.listen(prompt=prompt)
 			url = "https://www.google.com/maps/place/"+ str(search)
 			webbrowser.get().open(url)
 			self.habla("Aqui estan las "+ str(search))
-			print("Aqui estan las "+ str(search))
 		
 		if 'descansa' in data:
-			self.habla("Adios")
+			self.habla("Nos vemos.")
 			playsound.playsound("audio/sheep.mp3")
 			exit(0)
 
