@@ -73,7 +73,7 @@ class TupaAssistance:
 			search = self.listen(prompt=prompt)
 			url = "https://www.google.com/search?q="+ str(search)
 			webbrowser.get().open(url)
-			self.habla("Aqui es lo que encontre respecto a "+ search)
+			self.habla("Aqui es lo que encontre respecto a "+ str(search))
 
 		if 'traduce' in data:
 			prompt = "¿Qué quieres traducir?"
